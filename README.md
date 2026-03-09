@@ -7,20 +7,22 @@
 ## Features
 
 - Convert GraphQL schema (.graphql, .gql) files to TypeScript interfaces and types
-- Generate client-side TypeScript types for GraphQL queries and mutations
+- Generate TypeScript enums, union types, and input types from GraphQL schemas
 - Provide command-line interface for direct file processing
-- Handle complex GraphQL types including unions, interfaces, and enums
+- Handle complex GraphQL types including unions, interfaces, enums, and input objects
 - Validate GraphQL schemas before TypeScript generation
-- Integrate with OpenClaw agent workflows for automation
 - Support batch processing of multiple schema files
+- Proper nullability mapping for all GraphQL type combinations
 
 ## Configuration
 
-- `-o, --output <dir>`: Output directory for generated TypeScript files (default: `./generated`)
-- `-f, --format <style>`: Code formatting style (default: standard)
-- `-v, --verbose`: Enable verbose logging
-- `--no-validate`: Skip schema validation (not recommended)
+- `-o, --output <dir>`: Output directory for generated TypeScript files (default: `dist`)
+- `-p, --prefix <prefix>`: Prefix for generated type names
+- `-n, --namespace <name>`: Wrap types in a namespace
+- `--skip-enums`: Skip enum generation
+- `--skip-unions`: Skip union type generation
 - `-h, --help`: Show help message
+- `-v, --version`: Show version number
 
 ## Quick Start
 ## Installation

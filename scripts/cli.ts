@@ -1,13 +1,12 @@
-#!/usr/bin/env node
 /**
  * GraphQL TypeScript Generator - CLI Parser
  * Handles command-line argument parsing and validation
  */
 
-import { argv } from 'process';
-import { existsSync, lstatSync, readFileSync } from 'fs';
-import { join, dirname, resolve } from 'path';
-import { loadSchema } from './utils.js';
+import { existsSync, lstatSync } from 'fs';
+import { dirname, resolve } from 'path';
+import { loadSchema } from './utils';
+import { GraphQLSchema } from 'graphql';
 
 export interface CLIConfig {
   schemaPaths: string[];
@@ -18,6 +17,12 @@ export interface CLIConfig {
   skipUnions?: boolean;
   help: boolean;
   version: boolean;
+}
+
+export interface LoadedSchema {
+  schema: GraphQLSchema;
+  path: string;
+  name: string;
 }
 
 const DEFAULT_OUTPUT_DIR = 'dist';
@@ -49,8 +54,8 @@ const VERSION = '1.0.0';
 /**
  * Parse command line arguments
  */
-export function parseArgs(): CLIConfig {
-  const args = argv.slice(2);
+export function parseArgs(args?: string[]): CLIConfig {
+  const argv = args ?? process.argv.slice(2);
   const config: CLIConfig = {
     schemaPaths: [],
     outputDir: DEFAULT_OUTPUT_DIR,
@@ -59,8 +64,8 @@ export function parseArgs(): CLIConfig {
   };
 
   let i = 0;
-  while (i < args.length) {
-    const arg = args[i];
+  while (i < argv.length) {
+    const arg = argv[i];
 
     switch (arg) {
       case '-h':
@@ -75,26 +80,26 @@ export function parseArgs(): CLIConfig {
 
       case '-o':
       case '--output':
-        if (i + 1 >= args.length) {
+        if (i + 1 >= argv.length) {
           throw new Error('Missing output directory argument');
         }
-        config.outputDir = args[++i];
+        config.outputDir = argv[++i];
         break;
 
       case '-n':
       case '--namespace':
-        if (i + 1 >= args.length) {
+        if (i + 1 >= argv.length) {
           throw new Error('Missing namespace argument');
         }
-        config.namespace = args[++i];
+        config.namespace = argv[++i];
         break;
 
       case '-p':
       case '--prefix':
-        if (i + 1 >= args.length) {
+        if (i + 1 >= argv.length) {
           throw new Error('Missing prefix argument');
         }
-        config.prefix = args[++i];
+        config.prefix = argv[++i];
         break;
 
       case '--skip-enums':
@@ -106,7 +111,6 @@ export function parseArgs(): CLIConfig {
         break;
 
       default:
-        // Positional argument - should be a schema file path
         if (arg.startsWith('-')) {
           throw new Error(`Unknown option: ${arg}`);
         }
@@ -131,23 +135,20 @@ export function validateConfig(config: CLIConfig): void {
     throw new Error('No schema files specified. Use -h for help.');
   }
 
-  // Validate all schema paths exist and are files
-  for (const path of config.schemaPaths) {
-    if (!existsSync(path)) {
-      throw new Error(`Schema file not found: ${path}`);
+  for (const schemaPath of config.schemaPaths) {
+    if (!existsSync(schemaPath)) {
+      throw new Error(`Schema file not found: ${schemaPath}`);
     }
-    const stat = lstatSync(path);
+    const stat = lstatSync(schemaPath);
     if (!stat.isFile()) {
-      throw new Error(`Schema path is not a file: ${path}`);
+      throw new Error(`Schema path is not a file: ${schemaPath}`);
     }
   }
 
-  // Ensure output directory exists or can be created
   const outputDir = resolve(config.outputDir);
   try {
-    // Will throw if dirname is invalid
     dirname(outputDir);
-  } catch (e) {
+  } catch {
     throw new Error(`Invalid output directory: ${config.outputDir}`);
   }
 }
@@ -155,19 +156,19 @@ export function validateConfig(config: CLIConfig): void {
 /**
  * Load and validate all schemas
  */
-export async function loadSchemas(schemaPaths: string[]): Promise<any> {
-  const schemas: any[] = [];
+export function loadSchemas(schemaPaths: string[]): LoadedSchema[] {
+  const schemas: LoadedSchema[] = [];
 
-  for (const path of schemaPaths) {
+  for (const schemaPath of schemaPaths) {
     try {
-      const schema = loadSchema(path);
+      const schema = loadSchema(schemaPath);
       schemas.push({
         schema,
-        path,
-        name: getSchemaName(path)
+        path: schemaPath,
+        name: getSchemaName(schemaPath)
       });
     } catch (error: any) {
-      throw new Error(`Failed to load schema ${path}: ${error.message}`);
+      throw new Error(`Failed to load schema ${schemaPath}: ${error.message}`);
     }
   }
 
@@ -179,7 +180,7 @@ export async function loadSchemas(schemaPaths: string[]): Promise<any> {
  */
 function getSchemaName(filePath: string): string {
   const base = filePath.split('/').pop() || filePath.split('\\').pop() || 'schema';
-  const name = base.replace(/\.[^/.]+$/, ''); // Remove extension
+  const name = base.replace(/\.[^/.]+$/, '');
   return name.replace(/[^a-zA-Z0-9]/g, '_');
 }
 
