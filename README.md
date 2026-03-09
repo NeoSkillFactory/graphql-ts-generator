@@ -2,26 +2,38 @@
 
 ![Audit](https://img.shields.io/badge/audit%3A%20PASS-brightgreen) ![License](https://img.shields.io/badge/license-MIT-blue) ![OpenClaw](https://img.shields.io/badge/OpenClaw-skill-orange)
 
-> A skill that automatically generates TypeScript types from GraphQL schema files.
+> Automatically generates TypeScript types from GraphQL schema files with CLI integration for developers and AI agents.
 
-I need to see what you were working on before. Let me check the workspace for any recent files or context.
+## Features
 
+- Convert GraphQL schema (.graphql, .gql) files to TypeScript interfaces and types
+- Generate client-side TypeScript types for GraphQL queries and mutations
+- Provide command-line interface for direct file processing
+- Handle complex GraphQL types including unions, interfaces, and enums
+- Validate GraphQL schemas before TypeScript generation
+- Integrate with OpenClaw agent workflows for automation
+- Support batch processing of multiple schema files
+
+## Configuration
+
+- `-o, --output <dir>`: Output directory for generated TypeScript files (default: `./generated`)
+- `-f, --format <style>`: Code formatting style (default: standard)
+- `-v, --verbose`: Enable verbose logging
+- `--no-validate`: Skip schema validation (not recommended)
+- `-h, --help`: Show help message
+
+## Quick Start
 ## Installation
 
 ```bash
 npm install -g graphql-ts-generator
 ```
 
-## OpenClaw Marketplace
+## GitHub
 
-This skill is available on [ClawHub](https://clawhub.ai) — the OpenClaw skill marketplace.
-Install it in any OpenClaw agent workspace with:
+Source code: [github.com/NeoSkillFactory/graphql-ts-generator](https://github.com/NeoSkillFactory/graphql-ts-generator)
 
-```bash
-clawhub install graphql-ts-generator
-```
-
-**Recommended price when commercial:** $29 USD
+**Price suggestion:** $29 USD
 
 ## License
 
