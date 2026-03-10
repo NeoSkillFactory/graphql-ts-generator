@@ -35,8 +35,6 @@ npm install -g graphql-ts-generator
 
 Source code: [github.com/NeoSkillFactory/graphql-ts-generator](https://github.com/NeoSkillFactory/graphql-ts-generator)
 
-**Price suggestion:** $29 USD
-
 ## License
 
 MIT © NeoSkillFactory
